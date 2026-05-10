@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Controle - Seleção de Início</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+
+    <style>
+        body {
+            background: #1a1a1a;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #tab-config-penaltis {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        .config-nomes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #333;
+            border-radius: 8px;
+        }
+
+        .config-nomes input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .start-choice {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px dashed #555;
+            border-radius: 8px;
+        }
+
+        .start-choice button {
+            padding: 5px 10px;
+            font-size: 12px;
+            margin: 0 5px;
+            background: #444;
+            color: #fff;
+        }
+
+        .start-choice button.active {
+            background: #ffff00;
+            color: #000;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .btn-goal {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-miss {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reset {
+            background: #666;
+            color: white;
+            margin-top: 20px;
+        }
+
+        #turn-indicator {
+            color: #ffff00;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="tab-config-penaltis">
+        <h2>PAINEL CONTROL PÊNALTIS</h2>
+
+        <div class="config-nomes">
+            <label>Nomes dos Times:</label>
+            <input type="text" id="input-team-a" placeholder="Nome Time A" oninput="updateNames()">
+            <input type="text" id="input-team-b" placeholder="Nome Time B" oninput="updateNames()">
+
+            <div class="start-choice" id="start-choice-area">
+                <p style="font-size: 13px; margin-bottom: 8px;">Quem inicia as cobranças?</p>
+                <button id="btn-start-a" onclick="setFirstTurn('a')">TIME A</button>
+                <button id="btn-start-b" onclick="setFirstTurn('b')">TIME B</button>
+            </div>
+        </div>
+
+        <div id="turn-indicator">CONECTANDO...</div>
+
+        <div class="controls">
+            <button class="btn-goal" id="btn-goal" onclick="processShot(true)">GOOL</button>
+            <button class="btn-miss" id="btn-miss" onclick="processShot(false)">PERDEU</button>
+            <button class="btn-reset" onclick="reset()">RESETAR TUDO</button>
+        </div>
+    </div>
+
+    <script>
+        // --- SUA CONFIGURAÇÃO MANTIDA ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHKTA-mgIuWcVypfDkGrNhxtsynrUtq1Y",
+            authDomain: "placar-live-53cc0.firebaseapp.com",
+            projectId: "placar-live-53cc0",
+            databaseURL: "https://placar-live-53cc0-default-rtdb.firebaseio.com",
+            storageBucket: "placar-live-53cc0.firebasestorage.app",
+            messagingSenderId: "291622264576",
+            appId: "1:291622264576:web:1ca81d1333e4b0cb7b1de5",
+            measurementId: "G-ZJPHJ42ECV"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let state = {
+            nameA: "TIME A", nameB: "TIME B",
+            scoreA: 0, scoreB: 0,
+            attemptsA: 0, attemptsB: 0,
+            currentTurn: 'a',
+            isSuddenDeath: false,
+            gameOver: false,
+            started: false, // Nova flag para travar a escolha inicial
+            dotsA: ['', '', '', '', ''], dotsB: ['', '', '', '', ''],
+            headerText: "DISPUTA DE PÊNALTIS - 0 / 5", winnerMsg: ""
+        };
+
+        db.ref('penalty_match').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                state = data;
+                document.getElementById('input-team-a').value = state.nameA;
+                document.getElementById('input-team-b').value = state.nameB;
+                document.getElementById('btn-start-a').innerText = state.nameA;
+                document.getElementById('btn-start-b').innerText = state.nameB;
+                updateControlUI();
+            }
+        });
+
+        function sync() { db.ref('penalty_match').set(state); }
+
+        function updateNames() {
+            state.nameA = document.getElementById('input-team-a').value || "TIME A";
+            state.nameB = document.getElementById('input-team-b').value || "TIME B";
+            sync();
+        }
+
+        function setFirstTurn(team) {
+            if (state.started) return; // Não permite mudar se já começou
+            state.currentTurn = team;
+            sync();
+        }
+
+        function processShot(isGoal) {
+            if (state.gameOver) return;
+            state.started = true; // Trava a escolha de quem começa
+
+            const team = state.currentTurn;
+            const visualIndex = (team === 'a' ? state.attemptsA : state.attemptsB) % 5;
+            const statusClass = isGoal ? 'goal' : 'miss';
+
+            if (team === 'a') {
+                state.dotsA[visualIndex] = statusClass;
+                if (isGoal) state.scoreA++;
+                state.attemptsA++;
+                state.currentTurn = 'b';
+            } else {
+                state.dotsB[visualIndex] = statusClass;
+                if (isGoal) state.scoreB++;
+                state.attemptsB++;
+                state.currentTurn = 'a';
+            }
+            checkStatus();
+            sync();
+        }
+
+        function checkStatus() {
+            const tA = state.attemptsA;
+            const tB = state.attemptsB;
+            if (tA <= 5 && tB <= 5) {
+                const remA = 5 - tA; const remB = 5 - tB;
+                if (state.scoreA > state.scoreB + remB || state.scoreB > state.scoreA + remA) declareWinner();
+                if (tA === 5 && tB === 5 && state.scoreA === state.scoreB) {
+                    state.isSuddenDeath = true;
+                    setTimeout(clearDots, 1000);
+                }
+            } else if (tA === tB) {
+                if (state.scoreA !== state.scoreB) declareWinner();
+                else if (tA % 5 === 0) setTimeout(clearDots, 1000);
+            }
+            state.headerText = state.isSuddenDeath ? `DISPULTA DE PÊNALTIS - ALTERNADAS - ${Math.max(tA, tB)} / ${Math.max(tA, tB)}` : `DISPULTA DE PÊNALTIS - ${Math.max(tA, tB)} / 5`;
+        }
+
+        function clearDots() {
+            state.dotsA = ['', '', '', '', ''];
+            state.dotsB = ['', '', '', '', ''];
+            sync();
+        }
+
+        function declareWinner() {
+            state.gameOver = true;
+            state.winnerMsg = state.scoreA > state.scoreB ? `${state.nameA} VENCEU!` : `${state.nameB} VENCEU!`;
+        }
+
+        function updateControlUI() {
+            const turnText = state.currentTurn === 'a' ? state.nameA : state.nameB;
+            document.getElementById('turn-indicator').innerText = state.gameOver ? "FIM DE JOGO" : `Vez de: ${turnText}`;
+
+            // Estética dos botões de escolha inicial
+            document.getElementById('btn-start-a').className = state.currentTurn === 'a' ? 'active' : '';
+            document.getElementById('btn-start-b').className = state.currentTurn === 'b' ? 'active' : '';
+
+            // Esconde a escolha se já começou
+            document.getElementById('start-choice-area').style.opacity = state.started ? '0.3' : '1';
+            document.getElementById('start-choice-area').style.pointerEvents = state.started ? 'none' : 'auto';
+
+            document.getElementById('btn-goal').disabled = state.gameOver;
+            document.getElementById('btn-miss').disabled = state.gameOver;
+        }
+
+        function reset() {
+            if (!confirm("Resetar?")) return;
+            state = {
+                nameA: state.nameA, nameB: state.nameB,
+                scoreA: 0, scoreB: 0, attemptsA: 0, attemptsB: 0,
+                currentTurn: 'a', isSuddenDeath: false, gameOver: false, started: false,
+                dotsA: ['', '', '', '', ''], dotsB: ['', '', '', '', ''],
+                headerText: "DISPUTA DE PÊNALTIS - 0 / 5", winnerMsg: ""
+            };
+            sync();
+        }
+    </script>
+</body>
+
+</html>

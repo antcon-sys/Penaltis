@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Penalty Overlay</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: transparent;
+            font-family: 'Roboto', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+
+#penalty-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 60%;
+    background: rgba(10, 10, 10, 0.9);
+    padding: 5px;
+    border-radius: 10px;
+    border-bottom: 3px solid #E65100;
+    border-right: 3px solid #E65100;
+    margin-top: 650px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 15px 0 8px;
+    letter-spacing: 3px;
+    color: #ffffff;
+}
+
+.teams {
+    display: flex;
+    justify-content: center;
+    /*flex-direction: column;
+    width: 100%;
+    gap: 10px;*/
+}
+
+.team-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 5px 10px;
+}
+
+.team-name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 95%;
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 3px;
+    letter-spacing: 2px;
+}
+
+.shots {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+    }
+
+.dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.4s;
+}
+
+.goal {
+    background: #00ff00;
+    box-shadow: 0 0 15px #00ff00;
+    border-color: #fff;
+    transform: scale(1.1);
+}
+
+.miss {
+    background: #ff0000;
+    box-shadow: 0 0 15px #ff0000;
+    border-color: #fff;
+}
+
+.score {
+    width: 50px;
+    font-size: 35px;
+    font-weight: bold;
+    color: #ffff00;
+    text-align: center;
+    margin: 0 5px;
+}
+
+.winner {
+    margin-top: 15px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #00ff00;
+}
+
+    </style>
+</head>
+
+<body>
+    <div id="penalty-container">
+        <div class="header" id="status-header">CARREGANDO...</div>
+        <div class="teams">
+            <div class="team-row">
+                <div class="team-name" id="display-name-a">TIME A</div>
+                <div class="shots" id="shots-a"></div>
+                <div class="score" id="score-a">0</div>
+            </div>
+            <div class="team-row">
+                <div class="team-name" id="display-name-b">TIME B</div>
+                <div class="shots" id="shots-b"></div>
+                <div class="score" id="score-b">0</div>
+            </div>
+        </div>
+        <div class="winner" id="winner-announcement"></div>
+    </div>
+
+    <script>
+
+        // --- SUA CONFIGURAÇÃO MANTIDA ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHKTA-mgIuWcVypfDkGrNhxtsynrUtq1Y",
+            authDomain: "placar-live-53cc0.firebaseapp.com",
+            projectId: "placar-live-53cc0",
+            databaseURL: "https://placar-live-53cc0-default-rtdb.firebaseio.com",
+            storageBucket: "placar-live-53cc0.firebasestorage.app",
+            messagingSenderId: "291622264576",
+            appId: "1:291622264576:web:1ca81d1333e4b0cb7b1de5",
+            measurementId: "G-ZJPHJ42ECV"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('penalty_match').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('display-name-a').innerText = data.nameA;
+                document.getElementById('display-name-b').innerText = data.nameB;
+                document.getElementById('score-a').innerText = data.scoreA;
+                document.getElementById('score-b').innerText = data.scoreB;
+                document.getElementById('winner-announcement').innerText = data.winnerMsg || "";
+                document.getElementById('status-header').innerText = data.headerText;
+                renderDots('a', data.dotsA);
+                renderDots('b', data.dotsB);
+            }
+        });
+
+        function renderDots(team, dotClasses) {
+            const container = document.getElementById(`shots-${team}`);
+            container.innerHTML = '';
+            dotClasses.forEach(className => {
+                const dot = document.createElement('div');
+                dot.className = `dot ${className}`;
+                container.appendChild(dot);
+            });
+        }
+    </script>
+</body>
+
+</html>
