@@ -3,6 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
     <title>Penalty Overlay</title>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -20,101 +25,100 @@
         }
 
 
-#penalty-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 60%;
-    background: rgba(10, 10, 10, 0.9);
-    padding: 5px;
-    border-radius: 10px;
-    border-bottom: 3px solid #E65100;
-    border-right: 3px solid #E65100;
-    margin-top: 650px;
-}
+        #penalty-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60%;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 5px;
+            border-radius: 10px;
+            border-bottom: 3px solid #E65100;
+            border-right: 3px solid #E65100;
+            margin-top: 650px;
+        }
 
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    font-weight: bold;
-    margin: 15px 0 8px;
-    letter-spacing: 3px;
-    color: #ffffff;
-}
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: bold;
+            margin: 15px 0 8px;
+            letter-spacing: 3px;
+            color: #ffffff;
+        }
 
-.teams {
-    display: flex;
-    justify-content: center;
-    /*flex-direction: column;
+        .teams {
+            display: flex;
+            justify-content: center;
+            /*flex-direction: column;
     width: 100%;
     gap: 10px;*/
-}
+        }
 
-.team-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 5px 10px;
-}
+        .team-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 5px 10px;
+        }
 
-.team-name {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 95%;
-    font-size: 20px;
-    font-weight: bold;
-    margin-left: 3px;
-    letter-spacing: 2px;
-}
+        .team-name {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 95%;
+            font-size: 20px;
+            font-weight: bold;
+            margin-left: 3px;
+            letter-spacing: 2px;
+        }
 
-.shots {
-    display: flex;
-    gap: 10px;
-    flex-grow: 1;
-    }
+        .shots {
+            display: flex;
+            gap: 10px;
+            flex-grow: 1;
+        }
 
-.dot {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.4s;
-}
+        .dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s;
+        }
 
-.goal {
-    background: #00ff00;
-    box-shadow: 0 0 15px #00ff00;
-    border-color: #fff;
-    transform: scale(1.1);
-}
+        .goal {
+            background: #00ff00;
+            box-shadow: 0 0 15px #00ff00;
+            border-color: #fff;
+            transform: scale(1.1);
+        }
 
-.miss {
-    background: #ff0000;
-    box-shadow: 0 0 15px #ff0000;
-    border-color: #fff;
-}
+        .miss {
+            background: #ff0000;
+            box-shadow: 0 0 15px #ff0000;
+            border-color: #fff;
+        }
 
-.score {
-    width: 50px;
-    font-size: 35px;
-    font-weight: bold;
-    color: #ffff00;
-    text-align: center;
-    margin: 0 5px;
-}
+        .score {
+            width: 50px;
+            font-size: 35px;
+            font-weight: bold;
+            color: #ffff00;
+            text-align: center;
+            margin: 0 5px;
+        }
 
-.winner {
-    margin-top: 15px;
-    font-size: 22px;
-    font-weight: bold;
-    color: #00ff00;
-}
-
+        .winner {
+            margin-top: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #00ff00;
+        }
     </style>
 </head>
 
