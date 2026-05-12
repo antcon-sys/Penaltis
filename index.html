@@ -238,7 +238,7 @@
 
         function declareWinner() {
             state.gameOver = true;
-            state.winnerMsg = state.scoreA > state.scoreB ? `${state.nameA} VENCEU!` : `${state.nameB} VENCEU!`;
+            state.winnerMsg = state.scoreA > state.scoreB ? `===> ${state.nameA} VENCEU! <===` : `===> ${state.nameB} VENCEU! <===`;
         }
 
         function updateControlUI() {

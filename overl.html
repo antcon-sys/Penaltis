@@ -29,11 +29,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 60%;
-            height: 17vh;
+            width: 65%;
+            height: 18vh;
             background: rgba(10, 10, 10, 0.9);
             padding: 5px;
-            border-radius: 10px;
+            border-radius: 40px;
             border-bottom: 5px solid #E65100;
             border-right: 5px solid #E65100;
             margin-top: 78vh;
@@ -53,6 +53,7 @@
         .teams {
             display: flex;
             justify-content: center;
+            align-items: center;
         }
 
         .team-row {
@@ -60,29 +61,33 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin: 5px 10px;
+            margin: 5px 2px;
         }
 
         .team-name {
             display: flex;
             justify-content: center;
             align-items: center;
+            text-align: center;
+            text-transform: uppercase;
             width: 95%;
             font-size: 25px;
-            font-weight: bold;
             margin-left: 3px;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
         }
 
         .shots {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-grow: 1;
+            justify-content: center;
         }
 
         .dot {
-            width: 22px;
-            height: 22px;
+            display: flex;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.2);
@@ -94,21 +99,43 @@
             box-shadow: 0 0 15px #00ff00;
             border-color: #fff;
             transform: scale(1.1);
+            opacity: .8;
         }
 
         .miss {
             background: #ff0000;
             box-shadow: 0 0 15px #ff0000;
             border-color: #fff;
+            opacity: .85;
         }
 
-        .score {
+        .scoreA1 {
             width: 50px;
-            font-size: 35px;
+            font-size: 40px;
             font-weight: bold;
             color: #ffff00;
             text-align: center;
-            margin: 0 5px;
+            padding: 2px 7px 2px;
+            margin-left: 20px;
+            border-right: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .scoreB1 {
+            width: 50px;
+            font-size: 40px;
+            font-weight: bold;
+            color: #ffff00;
+            text-align: center;
+            padding: 2px 7px 2px;
+            margin-right: 20px;
+            border-left: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .score-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 2px;
         }
 
         .winner {
@@ -116,6 +143,7 @@
             font-size: 26px;
             color: #00ff00;
             letter-spacing: 3px;
+            text-transform: uppercase;
         }
     </style>
 </head>
@@ -126,12 +154,16 @@
         <div class="teams">
             <div class="team-row">
                 <div class="team-name" id="display-name-a">TIME A</div>
-                <div class="shots" id="shots-a"></div>
-                <div class="score" id="score-a">0</div>
+                <div class="score-center">
+                    <div class="shots" id="shots-a"></div>
+                    <div class="scoreA1" id="score-a">0</div>
+                </div>
             </div>
             <div class="team-row">
-                <div class="score" id="score-b">0</div>
-                <div class="shots" id="shots-b"></div>
+                <div class="score-center">
+                    <div class="scoreB1" id="score-b">0</div>
+                    <div class="shots" id="shots-b"></div>
+                </div>
                 <div class="team-name" id="display-name-b">TIME B</div>
             </div>
         </div>
